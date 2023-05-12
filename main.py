@@ -21,10 +21,14 @@ def clean_dataset(dataframe):
 
     # Normalize the data using MinMaxScaler
     scaler = MinMaxScaler()
-    df_norm = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
+    df['normalized_sales_units'] = scaler.fit_transform(df[['sales_units']])
+    df['normalized_inventory_units'] = scaler.fit_transform(df[['inventory_units']])
+
+    df = df.drop(columns=['sales_units', 'inventory_units'])
+    print(df)
 
     # Return the cleaned dataset
-    return df_norm
+    return df
 
 
 def main():
