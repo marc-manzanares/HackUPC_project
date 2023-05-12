@@ -17,6 +17,8 @@ class Server:
     def __init__(self):
         self.mnist_model_params = None
         self.chest_x_ray_model_params = None
+        #TODO Add HP model?
+
         self.init_params()
         self.training_clients = {}
         self.status = ServerStatus.IDLE
@@ -26,6 +28,8 @@ class Server:
             weights = torch.randn((28 * 28, 1), dtype=torch.float, requires_grad=True)
             bias = torch.randn(1, dtype=torch.float, requires_grad=True)
             self.mnist_model_params = weights, bias
+
+            #TODO Initialize HP model params??
 
     async def start_training(self, training_type):
         if self.status != ServerStatus.IDLE:
@@ -43,6 +47,9 @@ class Server:
             elif training_type == TrainingType.CHEST_X_RAY_PNEUMONIA:
                 request_body = model_params_to_request_params(training_type, self.chest_x_ray_model_params)
                 federated_learning_config = FederatedLearningConfig(learning_rate=0.0001, epochs=1, batch_size=2)
+            elif training_type == TrainingType.HP_FORECASTING_MODEL: #TODO Change the model params to fit the ML algorithm
+                request_body = model_params_to_request_params(training_type, self.mnist_model_params)
+                federated_learning_config = FederatedLearningConfig(learning_rate=1., epochs=20, batch_size=256)
 
             request_body['learning_rate'] = federated_learning_config.learning_rate
             request_body['epochs'] = federated_learning_config.epochs
@@ -101,6 +108,7 @@ class Server:
                 new_weights = np.stack(received_weights).mean(0)
                 self.chest_x_ray_model_params = new_weights
                 print('Model weights for', TrainingType.CHEST_X_RAY_PNEUMONIA, 'updated in central model')
+            #TODO Add the HP model here
             self.status = ServerStatus.IDLE
         sys.stdout.flush()
 
