@@ -119,6 +119,7 @@ class Client:
             })
 
         except:
+            pass
             #print('This model is already stored on the Blockchain')
 
         # Sign the transaction
