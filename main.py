@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from statsmodels.graphics.tsaplots import plot_acf
 from statsmodels.graphics.tsaplots import plot_pacf
 from pandas.plotting import register_matplotlib_converters
+from statsmodels.tsa.arima.model import ARIMA
 import numpy as np
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.api import VAR
@@ -71,7 +72,12 @@ def check_stationary(df):
         print('\t{}: {:.3f}'.format(key, value))
 
 def autocorrelation_function(df):
-    plot_acf(df)
+   # Get the current x-axis limits
+    acf_plot = plot_acf(df)
+    x_limits = acf_plot.axes[0].get_xlim()
+
+    # Set the x-axis limits to a new range of values
+    acf_plot.axes[0].set_xlim([0, 4])
     plt.show()
 
 def partial_autocorrelation_function(df):
@@ -120,6 +126,17 @@ def main():
     check_stationary(new['inventory_units'])
     check_stationary(new['sales_units'])
 
+    autocorrelation_function(new['inventory_units'])
+    autocorrelation_function(new['sales_units'])
+    
+    #LAG OF 1
+    final = new[['inventory_units', 'sales_units']].diff(1)
+    final = final.dropna()
+    print(final)
+
+    # Remove any rows with missing values (since the first row will now be missing)
+    train_df = train_df.dropna()
+
     # it's interesting to know the correlation among variables
     # Calculate the correlation matrix for the numeric columns
     corr_matrix = train_df.corr(numeric_only=True)
@@ -133,16 +150,14 @@ def main():
     X_train = prepare_df(train_df)
     y_train = train_df.inventory_units
 
-    # the best model in the world
-    lm_model = LinearRegression()
-    lm_model.fit(X_train, y_train)
+    # Define the hyperparameters to search over
+    p_values = [0, 1, 2]
+    d_values = [0, 1]
+    q_values = [0, 1, 2]
 
-    y_pred = lm_model.predict(X_train)
-    y_true = y_train
+    model = ARIMA(train_df['inventory_units'], order=(1,1,1))
+    result = model.fit()
 
-    # just checking the error on the training predictions
-    rms = mean_squared_error(y_true, y_pred, squared=False)
-    print(rms)
 
     # we need to prepare the test data 
     # and fill empty values before we can submit it
