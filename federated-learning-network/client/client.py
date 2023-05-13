@@ -111,11 +111,15 @@ class Client:
         # Example: Send data to a function named 'storeData' with a string parameter
         nonce = w3.eth.get_transaction_count(sender_address)
         # Send the model params hash to the blockchain
-        transaction = contract.functions.updateData('d3f9e8a670d6a5b374ee6e2bd8ae42a8ffb82317705c556995213d28283cb14c').build_transaction({
-            'from': sender_address,
-            'gas': 999999,  # Adjust the gas limit as per your requirement
-            'nonce': nonce,
-        })
+        try:
+            transaction = contract.functions.updateData('d3f9e8a670d6a5b374ee6e2bd8ae42a8ffb82317705c556995213d28283cb14c').build_transaction({
+                'from': sender_address,
+                'gas': 999999,  # Adjust the gas limit as per your requirement
+                'nonce': nonce,
+            })
+
+        except:
+            #print('This model is already stored on the Blockchain')
 
         # Sign the transaction
         signed_transaction = w3.eth.account.sign_transaction(transaction, private_key=private_key)
@@ -131,6 +135,12 @@ class Client:
         result = contract.functions.readData().call()
 
         # Print the result
+        print()
+        print()
+        print()
+        print()
+        print('BLOCKCHAIN')
+        print()
         print(result)
 
         response = requests.put(request_url, json=request_body)
