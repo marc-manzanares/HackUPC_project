@@ -143,6 +143,9 @@ class Client:
         print('BLOCKCHAIN')
         print()
         print(result)
+        print()
+        print()
+        print()
 
         response = requests.put(request_url, json=request_body)
         print('Response received from updating central model params:', response)
