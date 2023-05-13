@@ -112,12 +112,11 @@ class Client:
         nonce = w3.eth.get_transaction_count(sender_address)
         # Send the model params hash to the blockchain
         try:
-            transaction = contract.functions.updateData('d3f9e8a670d6a5b374ee6e2bd8ae42a8ffb82317705c556995213d28283cb14c').build_transaction({
+            transaction = contract.functions.updateData(hash_value).build_transaction({
                 'from': sender_address,
                 'gas': 999999,  # Adjust the gas limit as per your requirement
                 'nonce': nonce,
             })
-
         except:
             pass
             #print('This model is already stored on the Blockchain')
