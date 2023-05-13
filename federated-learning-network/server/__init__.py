@@ -1,5 +1,5 @@
 import asyncio
-import os
+import os, sys
 
 from flask import (
     Flask, Response, request, render_template
@@ -8,6 +8,8 @@ from flask import (
 from .server import Server
 from .utils import request_params_to_model_params
 
+if sys.platform == "win32" and (3, 8, 0) <= sys.version_info < (3, 9, 0):
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 def create_app(test_config=None):
     # create and configure the app

@@ -83,67 +83,67 @@ class Client:
 
         # Define the contract's ABI and address
         contract_abi = [
-              {
-                'inputs': [],
-                'stateMutability': 'nonpayable',
-                'type': 'constructor',
-                'constant': None,
-                'payable': None
-              },
-              {
-                'inputs': {},
-                'name': 'data',
-                'outputs': {},
-                'stateMutability': 'view',
-                'type': 'function',
-                'constant': True,
-                'payable': None,
-                'signature': '0xf0ba8440'
-              },
-              {
-                'inputs': [],
-                'name': 'owner',
-                'outputs': {},
-                'stateMutability': 'view',
-                'type': 'function',
-                'constant': True,
-                'payable': None,
-                'signature': '0x8da5cb5b'
-              },
-              {
-                'inputs': [],
-                'name': 'kill',
-                'outputs': [],
-                'stateMutability': 'nonpayable',
-                'type': 'function',
-                'constant': None,
-                'payable': None,
-                'signature': '0x41c0e1b5'
-              },
-              {
-                'inputs': {},
-                'name': 'updateData',
-                'outputs': [],
-                'stateMutability': 'nonpayable',
-                'type': 'function',
-                'constant': None,
-                'payable': None,
-                'signature': '0x68446ead'
-              },
-              {
-                'inputs': [],
-                'name': 'readData',
-                'outputs': {},
-                'stateMutability': 'view',
-                'type': 'function',
-                'constant': True,
-                'payable': None,
-                'signature': '0xbef55ef3'
-              }
-            ]
+            {
+                inputs: {},
+                stateMutability: 'nonpayable',
+                type: 'constructor',
+                constant: undefined,
+                payable: undefined
+            },
+            {
+                inputs: {},
+                name: 'data',
+                outputs: {},
+                stateMutability: 'view',
+                type: 'function',
+                constant: true,
+                payable: undefined,
+                signature: '0xf0ba8440'
+            },
+            {
+                inputs: {},
+                name: 'owner',
+                outputs: {},
+                stateMutability: 'view',
+                type: 'function',
+                constant: true,
+                payable: undefined,
+                signature: '0x8da5cb5b'
+            },
+            {
+                inputs: {},
+                name: 'kill',
+                outputs: {},
+                stateMutability: 'nonpayable',
+                type: 'function',
+                constant: undefined,
+                payable: undefined,
+                signature: '0x41c0e1b5'
+            },
+            {
+                inputs: {},
+                name: 'updateData',
+                outputs: {},
+                stateMutability: 'nonpayable',
+                type: 'function',
+                constant: undefined,
+                payable: undefined,
+                signature: '0x68446ead'
+            },
+            {
+                inputs: {},
+                name: 'readData',
+                outputs: {},
+                stateMutability: 'view',
+                type: 'function',
+                constant: true,
+                payable: undefined,
+                signature: '0xbef55ef3'
+            }
+        ]
 
         # Replace with the actual ABI
-        contract_address = '0xaC1727eD7F6e36d1eC38688D13aEBD464F68d588'  # Replace with the actual contract address
+        contract_address = '0x7a87C70d8aE383847D31c17101b9Abe9b09D3d24'  # Replace with the actual contract address
 
         # Load the contract
         contract = w3.eth.contract(address=contract_address, abi=contract_abi)
@@ -152,7 +152,7 @@ class Client:
         print(type(data_to_push))
 
         # Example: Send data to a function named 'storeData' with a string parameter
-        tx_hash = contract.functions.updateData('hello').transact()
+        tx_hash = contract.functions.updateData(data_to_push).transact()
 
         # Print the transaction hash
         print("Transaction Hash:", tx_hash.hex())
