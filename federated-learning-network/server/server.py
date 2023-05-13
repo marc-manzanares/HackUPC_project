@@ -18,6 +18,7 @@ class Server:
         self.mnist_model_params = None
         self.chest_x_ray_model_params = None
         #TODO Add HP model?
+        self.hp_forecast_model_params = None
 
         self.init_params()
         self.training_clients = {}
@@ -48,8 +49,8 @@ class Server:
                 request_body = model_params_to_request_params(training_type, self.chest_x_ray_model_params)
                 federated_learning_config = FederatedLearningConfig(learning_rate=0.0001, epochs=1, batch_size=2)
             elif training_type == TrainingType.HP_FORECASTING_MODEL: #TODO Change the model params to fit the ML algorithm
-                request_body = model_params_to_request_params(training_type, self.mnist_model_params) #TODO Change this line to HP
-                federated_learning_config = FederatedLearningConfig(learning_rate=1., epochs=20, batch_size=256)
+                request_body = model_params_to_request_params(training_type, self.hp_forecast_model_params) #TODO Change this line to HP
+                federated_learning_config = FederatedLearningConfig(learning_rate=1., epochs=1, batch_size=1)
 
             request_body['learning_rate'] = federated_learning_config.learning_rate #TODO Add the hp params if needed
             request_body['epochs'] = federated_learning_config.epochs

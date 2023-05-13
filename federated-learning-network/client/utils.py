@@ -18,6 +18,8 @@ def model_params_to_request_params(training_type, model_params):
             weights_array.append(np.array(weights).tolist())
         return {'weights': weights_array}
     #TODO Add hp training type
+    elif training_type == TrainingType.HP_FORECASTING_MODEL:
+        return {'weights': 0}
     else:
         raise ValueError('Unsupported training type', training_type)
 
@@ -42,6 +44,9 @@ def request_params_to_model_params(training_type, request_data):
             print('No weights found in the request')
             return None
     # TODO Add hp training type
+    elif training_type == TrainingType.HP_FORECASTING_MODEL:
+        weights = 0
+        model_params = weights
     print('Model params received length:', len(model_params))
     return model_params
 
