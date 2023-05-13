@@ -28,7 +28,7 @@ contract SmartContract {
     function verifyData(string calldata _data) private returns (bool) {
         for (uint i = 0; i < data.length; i++) {
             if (bytes(_data).length != bytes(data[i]).length) {
-            
+
             }
 
             if (keccak256(abi.encodePacked(_data)) == keccak256(abi.encodePacked(data[i]))) {
