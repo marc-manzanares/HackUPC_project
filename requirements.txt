@@ -1,0 +1,12 @@
+numpy==1.24.3
+pandas==2.0.1
+python-dateutil==2.8.2
+pytz==2023.3
+six==1.16.0
+tzdata==2023.3
+
+scikit-learn~=1.2.2
+matplotlib~=3.7.1
+torch~=2.0.1
+fastai~=2.7.12
+requests~=2.30.0

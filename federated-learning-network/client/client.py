@@ -8,6 +8,7 @@ from requests.exceptions import Timeout
 from .utils import model_params_to_request_params
 from .mnist_model_trainer import MnistModelTrainer
 from .chest_x_ray_model_trainer import ChestXRayModelTrainer
+from .hp_forecasting_trainer import HPForecastingTrainer
 from .client_status import ClientStatus
 from .config import DEFAULT_SERVER_URL
 from .training_type import TrainingType
@@ -39,6 +40,8 @@ class Client:
                 client_model_trainer = MnistModelTrainer(model_params, federated_learning_config)
             elif self.training_type == TrainingType.CHEST_X_RAY_PNEUMONIA:
                 client_model_trainer = ChestXRayModelTrainer(model_params, federated_learning_config, self.client_url)
+            elif self.training_type == TrainingType.HP_FORECASTING_MODEL:
+                client_model_trainer = HPForecastingTrainer(model_params, federated_learning_config)
             else:
                 raise ValueError('Unsupported training type', training_type)
 

@@ -9,3 +9,5 @@ class FederatedLearningConfig:
             self.learning_rate,
             self.epochs,
             self.batch_size)
+
+    #TODO Add the params for hp if needed

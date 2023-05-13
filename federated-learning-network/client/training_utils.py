@@ -7,3 +7,5 @@ def mnist_loss(predictions, targets):
 
 
 def linear_model(matrix, weights, bias): return matrix @ weights + bias
+
+#TODO Add some utils if needed

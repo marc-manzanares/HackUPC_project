@@ -8,4 +8,4 @@ class FederatedLearningConfig:
         return "Federated Learning config:\n--Learning Rate: {}\n--Epochs: {}\n--Batch size: {}\n".format(
             self.learning_rate,
             self.epochs,
-            self.batch_size)
+            self.batch_size) #TODO Add hp params if needed

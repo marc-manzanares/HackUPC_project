@@ -37,6 +37,11 @@
         $ctrl.chestXRayTrainingButton.addEventListener('click', () => {
             launchTraining(this, 'CHEST_X_RAY_PNEUMONIA');
         }, false);
+
+        $ctrl.hpForecastTrainingButton = document.getElementById('hpForecastTrainingButton');
+        $ctrl.hpForecastTrainingButton.addEventListener('click', () => {
+            launchTraining(this, 'HP_FORECASTING_MODEL');
+        }, false);
     }
 
     init();
