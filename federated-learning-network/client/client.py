@@ -14,7 +14,9 @@ from .client_status import ClientStatus
 from .config import DEFAULT_SERVER_URL
 from .training_type import TrainingType
 
-from web3 import Web3
+from web3 import Web3, Account
+
+compiled_contract_path = '../../smart-contracts/build/contracts/SmartContract.json'
 
 
 class Client:
@@ -82,80 +84,55 @@ class Client:
 
 
         # Define the contract's ABI and address
-        contract_abi = [
-              {
-                'inputs': [],
-                'stateMutability': 'nonpayable',
-                'type': 'constructor',
-                'constant': None,
-                'payable': None
-              },
-              {
-                'inputs': {},
-                'name': 'data',
-                'outputs': {},
-                'stateMutability': 'view',
-                'type': 'function',
-                'constant': True,
-                'payable': None,
-                'signature': '0xf0ba8440'
-              },
-              {
-                'inputs': [],
-                'name': 'owner',
-                'outputs': {},
-                'stateMutability': 'view',
-                'type': 'function',
-                'constant': True,
-                'payable': None,
-                'signature': '0x8da5cb5b'
-              },
-              {
-                'inputs': [],
-                'name': 'kill',
-                'outputs': [],
-                'stateMutability': 'nonpayable',
-                'type': 'function',
-                'constant': None,
-                'payable': None,
-                'signature': '0x41c0e1b5'
-              },
-              {
-                'inputs': {},
-                'name': 'updateData',
-                'outputs': [],
-                'stateMutability': 'nonpayable',
-                'type': 'function',
-                'constant': None,
-                'payable': None,
-                'signature': '0x68446ead'
-              },
-              {
-                'inputs': [],
-                'name': 'readData',
-                'outputs': {},
-                'stateMutability': 'view',
-                'type': 'function',
-                'constant': True,
-                'payable': None,
-                'signature': '0xbef55ef3'
-              }
-            ]
+        with open(compiled_contract_path) as file:
+            contract_json = json.load(file)  # load contract info as JSON
+            contract_abi = contract_json['abi']  # fetch contract's abi - necessary to call its functions
 
-        # Replace with the actual ABI
+        # Generate a new Ethereum account
+        new_account = Account.create()
+
+        # Retrieve the address and private key of the new account
+        address = new_account.address
+        private_key = new_account.key.hex()
+
+        # Print the address and private key
+        print("Address:", address)
+        print("Private Key:", private_key)
+
         contract_address = '0xaC1727eD7F6e36d1eC38688D13aEBD464F68d588'  # Replace with the actual contract address
+        #account_address = '0x2331D809c74C4A26078bfD35c14D90483f086246'
+        #sender_address = w3.eth.defaultAccount = w3.eth.accounts[0]
+        #private_key = '156be55f43e0516b326bfc54de56c0e9b57af20925a5d3d2857279adc96b140c'
 
-        # Load the contract
         contract = w3.eth.contract(address=contract_address, abi=contract_abi)
-        data_to_push = json.dumps(model_params)
 
-        print(type(data_to_push))
 
         # Example: Send data to a function named 'storeData' with a string parameter
-        tx_hash = contract.functions.updateData('hello').transact()
+        nonce = w3.eth.get_transaction_count(address)
+        transaction = contract.functions.updateData('Flipastulipas').build_transaction({
+            'from': address,
+            'gas': 88968,#21628,  # Adjust the gas limit as per your requirement
+            'nonce': nonce,
+        })
 
-        # Print the transaction hash
-        print("Transaction Hash:", tx_hash.hex())
+        gas_estimate = w3.eth.estimate_gas(transaction)
+        print("Gas estimate:", gas_estimate)
+
+        # Sign the transaction
+        signed_transaction = w3.eth.account.sign_transaction(transaction, private_key=private_key)
+
+        # Send the transaction
+        tx_hash = w3.eth.send_raw_transaction(signed_transaction.rawTransaction)
+
+        # Wait for the transaction to be mined
+        tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+        print(tx_receipt)
+
+        # Retrieve the updated data from the contract
+        result = contract.functions.readData().call()
+
+        # Print the result
+        print(result)
 
         response = requests.put(request_url, json=request_body)
         print('Response received from updating central model params:', response)
