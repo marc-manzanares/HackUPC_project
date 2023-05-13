@@ -1,3 +1,4 @@
+import hashlib
 import json
 import sys
 import requests
@@ -74,7 +75,7 @@ class Client:
         print('Sending calculated model weights to central node')
 
         # Connect to the Ethereum network (replace "your_network_url" with the actual network URL)
-        w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:9545/"))
+        w3 = Web3(Web3.HTTPProvider("http://localhost:9545/"))
 
         try:
             block_number = w3.eth.block_number
@@ -84,74 +85,50 @@ class Client:
 
 
         # Define the contract's ABI and address
-        contract_abi = [
-              {
-                'inputs': [],
-                'stateMutability': 'nonpayable',
-                'type': 'constructor',
-                'constant': None,
-                'payable': None
-              },
-              {
-                'inputs': {},
-                'name': 'data',
-                'outputs': {},
-                'stateMutability': 'view',
-                'type': 'function',
-                'constant': True,
-                'payable': None,
-                'signature': '0xf0ba8440'
-              },
-              {
-                'inputs': [],
-                'name': 'owner',
-                'outputs': {},
-                'stateMutability': 'view',
-                'type': 'function',
-                'constant': True,
-                'payable': None,
-                'signature': '0x8da5cb5b'
-              },
-              {
-                'inputs': [],
-                'name': 'kill',
-                'outputs': [],
-                'stateMutability': 'nonpayable',
-                'type': 'function',
-                'constant': None,
-                'payable': None,
-                'signature': '0x41c0e1b5'
-              },
-              {
-                'inputs': {},
-                'name': 'updateData',
-                'outputs': [],
-                'stateMutability': 'nonpayable',
-                'type': 'function',
-                'constant': None,
-                'payable': None,
-                'signature': '0x68446ead'
-              },
-              {
-                'inputs': [],
-                'name': 'readData',
-                'outputs': {},
-                'stateMutability': 'view',
-                'type': 'function',
-                'constant': True,
-                'payable': None,
-                'signature': '0xbef55ef3'
-              }
-            ]
+        with open(compiled_contract_path) as file:
+            contract_json = json.load(file)  # load contract info as JSON
+            contract_abi = contract_json['abi']  # fetch contract's abi - necessary to call its functions
 
-        # Replace with the actual ABI
         contract_address = '0xaC1727eD7F6e36d1eC38688D13aEBD464F68d588'  # Replace with the actual contract address
-
         contract = w3.eth.contract(address=contract_address, abi=contract_abi)
 
+        sender_address = str(None)
+        if self.client_url == "http://localhost:5001":
+            sender_address = w3.eth.accounts[0]
+            private_key = '156be55f43e0516b326bfc54de56c0e9b57af20925a5d3d2857279adc96b140c'
+        elif self.client_url == "http://localhost:5002":
+            sender_address = w3.eth.accounts[1]
+            private_key = '85f6304404359aca48fd74584d4a8eb277f840cab5879ad0845f0611bc935e41'
+        elif self.client_url == "http://localhost:5003":
+            sender_address = w3.eth.accounts[2]
+            private_key = '219f93ac01084ff0aff59619e7d9bc445c5fc3918b81c3fbaa52c17cf4945019'
+        elif self.client_url == "http://localhost:5004":
+            sender_address = w3.eth.accounts[3]
+            private_key = 'd3f7f5b578156c4c236a2e37ddc71122ed35111a6905bd06ff44c4ba512dfc96'
 
+        # Hash the model params
+        hash_value = hashlib.sha256(str(model_params).encode('utf-8')).hexdigest()
         # Example: Send data to a function named 'storeData' with a string parameter
-        tx_hash = contract.functions.updateData('hello').transact()
+        nonce = w3.eth.get_transaction_count(sender_address)
+        # Send the model params hash to the blockchain
+        transaction = contract.functions.updateData('d3f9e8a670d6a5b374ee6e2bd8ae42a8ffb82317705c556995213d28283cb14c').build_transaction({
+            'from': sender_address,
+            'gas': 999999,  # Adjust the gas limit as per your requirement
+            'nonce': nonce,
+        })
+
+        # Sign the transaction
+        signed_transaction = w3.eth.account.sign_transaction(transaction, private_key=private_key)
+
+        # Send the transaction
+        tx_hash = w3.eth.send_raw_transaction(signed_transaction.rawTransaction)
+
+        # Wait for the transaction to be mined
+        tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+        print(tx_receipt)
+
+        # Retrieve the updated data from the contract
+        result = contract.functions.readData().call()
 
         # Print the result
         print(result)
