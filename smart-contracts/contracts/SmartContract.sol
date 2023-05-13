@@ -2,8 +2,19 @@
 pragma solidity ^0.8.19;
 
 contract SmartContract {
+    address payable public owner;
+
     string[] public data;
     bool private valid;
+
+    constructor() public {
+        owner = payable(msg.sender);
+    }
+
+    function kill() external {
+        require(msg.sender == owner, "Only the owner can kill this contract");
+        selfdestruct(owner);
+    }
 
     function updateData(string calldata _data) external {
         valid = verifyData(_data);
@@ -28,5 +39,7 @@ contract SmartContract {
         return true;
         
     }
+
+
 
 }
