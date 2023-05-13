@@ -33,6 +33,7 @@ contract SmartContract {
 
             if (keccak256(abi.encodePacked(_data)) == keccak256(abi.encodePacked(data[i]))) {
                 revert("Data is already stored in the Blockchain");
+                //TODO Hacerlo transparente para el cliente si no se queda colgado
                 return false;
             }
         }
