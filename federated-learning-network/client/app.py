@@ -29,7 +29,7 @@ def training():
     print('Request POST /training for training type:', training_type)
     federated_learning_config = FederatedLearningConfig(request.json['learning_rate'],
                                                         request.json['epochs'],
-                                                        request.json['batch_size'])
+                                                        request.json['batch_size']) #TODO Add hp params if needed
     model_params = request_params_to_model_params(training_type, request.json)
     client.do_training(training_type, model_params, federated_learning_config)
     return Response(status=200)
